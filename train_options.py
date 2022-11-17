@@ -13,7 +13,7 @@ class TrainOptions(BaseOptions):
 
         hard = self.parser.add_argument_group('Hardware')
         hard.add_argument('--fx', default=963.893/1000, help='focal length in x(m)') # 963.893
-        hard.add_argument('--fy', default=962.998/1000, help='focal length in y(m)') #  963.893 or 962.998
+        hard.add_argument('--fy', default=963.893/1000, help='focal length in y(m)') #  963.893 or 962.998
         hard.add_argument('--u0', default=0, help='center of image(m)') # 962.998/1000
         hard.add_argument('--v0', default=0, help='center of image(m)') # 540.903/1000
 
@@ -34,7 +34,7 @@ class TrainOptions(BaseOptions):
         gen.set_defaults(pin_memory=True)
 
         in_out = self.parser.add_argument_group('io')
-        in_out.add_argument('--log_dir', default='~/semantic_grid/logs', help='Directory to store logs')
+        in_out.add_argument('--log_dir', default='./semantic_grid/logs', help='Directory to store logs')
         in_out.add_argument('--checkpoint', default=None, help='Path to checkpoint')
         in_out.add_argument('--from_json', default=None,
                             help='Load options from json file instead of the command line')
@@ -106,8 +106,8 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--crop_size', type=int, default=64, dest='crop_size',
                                     help='Size of crop around the agent')
 
-        self.parser.add_argument('--img_size', dest='img_size', type=int, default=[1280, 720])#[1280, 720]) #[256,256])#
-        self.parser.add_argument('--img_segm_size', dest='img_segm_size', type=int, default=[1280, 720]) #[128,128])#
+        self.parser.add_argument('--img_size', dest='img_size', type=int, default=[640,480])#[1280, 720])#[1280, 720]) #[256,256])#
+        self.parser.add_argument('--img_segm_size', dest='img_segm_size', type=int, default=[640,480])#[1280, 720]) #[128,128])#
 
 
         train.add_argument('--map_loss_scale', type=float, default=1.0, dest='map_loss_scale')

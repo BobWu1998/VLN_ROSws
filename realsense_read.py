@@ -28,15 +28,15 @@ def record_rgbd():
     pipeline = rs.pipeline()
 
     config = rs.config()
-    config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 30)
-    config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
+    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30) #1280, 720,
+    config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
     profile = pipeline.start(config)
 
     depth_sensor = profile.get_device().first_depth_sensor()
-    depth_sensor.set_option(
-        rs.option.visual_preset, 3
-    )  # Set high accuracy for depth sensor
+    # depth_sensor.set_option(
+    #     rs.option.visual_preset, 3
+    # )  # Set high accuracy for depth sensor
     depth_scale = depth_sensor.get_depth_scale()
 
     clipping_distance_in_meters = 1
@@ -53,6 +53,9 @@ def record_rgbd():
 
         if not aligned_depth_frame or not color_frame:
             raise RuntimeError("Could not acquire depth or color frames.")
+
+        # holefilling = rs.hole_filling_filter(1)
+        # aligned_depth_frame = holefilling.process(aligned_depth_frame)
 
         depth_image = np.asanyarray(aligned_depth_frame.get_data(), float)/MM_TO_M
         color_image = np.asanyarray(color_frame.get_data())

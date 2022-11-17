@@ -79,6 +79,9 @@ def get_3d_pose(pose_2D, agent_pose_2D, agent_sim_pose, y_height, init_rot, cell
     sim_pose[2] = -sim_pose_tmp_x
     #print("simulator pose of ltg :",  sim_pose)
     #print("*********************************************")
+    # sim_pose[0] = sim_pose_tmp_x
+    # sim_pose[1] = y_height
+    # sim_pose[2] = sim_pose_tmp_z
     return sim_pose.tolist() 
 
 

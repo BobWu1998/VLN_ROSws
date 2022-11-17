@@ -17,11 +17,6 @@ from multiprocessing import Pool, TimeoutError
 
 if __name__ == '__main__':
     options = TrainOptions().parse_args()
-    tester = VLNTesterUnknownMap(options)#, scene_id)
-    # tester.test_navigation()
-    # tester.occ_proj()
-    # tester.img_seg_habitat()
-    # tester.seg_proj()
-    # tester.update_sseg()
+    tester = VLNTesterUnknownMap(options)
     tester.pipeline_integration()
 
