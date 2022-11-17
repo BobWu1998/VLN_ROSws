@@ -5,6 +5,9 @@
 * ground projection of semantic map from semantic output
 * updated semantic map with occupancy map
 
+## Installation:
+Please refer to: https://github.com/ggeorgak11/CM2
+
 ## Completed running the test pipeline of cross-modal map learning for vision and language navigation with real-world data
 To run the data, first create the ROS working space following the steps described in:
 https://github.com/BobWu1998/Vision-Language-on-Roomba
@@ -14,7 +17,7 @@ After creating the workspace, git clone this repository to
 
 Run the following command:
 ```
-python main.py --name=test_episode --vln_no_map --root_path /home/bo/Desktop/VLN_desktop/aihabitat_data/ --model_exp_dir /home/bo/Desktop/VLN_desktop/VLN_rerun/models/ --save_nav_images --use_first_waypoint \
+python main.py --name=test_episode --vln_no_map --root_path aihabitat_data/ --model_exp_dir models/ --save_nav_images --use_first_waypoint \
 --steps_after_plan 1
 ```
 ## Implemented action-taking commands using ROS for Turtlebot3 and Roomba: move_new_v2.py
