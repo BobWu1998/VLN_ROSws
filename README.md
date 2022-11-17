@@ -4,7 +4,7 @@
 * semantic segmentation using aihabitat
 * semantic segmentation using DeepLabV3
 * ground projection of semantic map from semantic output
-# pred_ego_crops_sseg[17,:,:] = zero_map
+* updated semantic map with occupancy map
 
 ## Completed running the test pipeline of cross-modal map learning for vision and language navigation with real-world data
 ```
