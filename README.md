@@ -8,7 +8,8 @@
 
 ## Completed running the test pipeline of cross-modal map learning for vision and language navigation with real-world data
 ```
-python main.py --name=real --vln_no_map --root_path /home/bo/Desktop/VLN_desktop/aihabitat_data/ --model_exp_dir /home/bo/Desktop/VLN_desktop/VLN_rerun/models/ --save_nav_images --use_first_waypoint
+python main.py --name=test_episode --vln_no_map --root_path /home/bo/Desktop/VLN_desktop/aihabitat_data/ --model_exp_dir /home/bo/Desktop/VLN_desktop/VLN_rerun/models/ --save_nav_images --use_first_waypoint \
+--steps_after_plan 1
 ```
 ## Implemented action-taking commands using ROS for Turtlebot3 and Roomba: move_new_v2.py
 
