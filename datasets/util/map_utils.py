@@ -184,20 +184,6 @@ def get_gt_map(x, y, label_seq, abs_pose, grid_dim, cell_size, color_pcloud=None
     true_seg_grid = torch.zeros((grid_dim[0], grid_dim[1], 1), device='cuda')
     true_seg_grid[map_coords[:,1], map_coords[:,0]] = label_seq.clone()
 
-    '''
-    grid = torch.empty(27, grid_dim[0], grid_dim[1])
-    grid[:] = 1 / 27
-    concatenated = torch.cat([map_coords, label_seq.cpu().long()], dim=-1)
-    unique_values, counts = torch.unique(concatenated, dim=0, return_counts=True)
-    grid[unique_values[:, 2], unique_values[:, 1], unique_values[:, 0]] = counts + 1e-5
-    grid = grid / grid.sum(dim=0)
-    print(grid.shape)
-    #grid = torch.argmax(grid, axis=0).unsqueeze(2)
-    true_seg_grid = torch.flip(grid, dims=[1])
-    #grid = torch.flip(grid, dims=[0])
-    #grid = grid.permute(2, 0, 1)
-    '''
-
     ### We need to flip the ground truth to align with the observations.
     ### Probably because the -y tp -z is a rotation about x axis which also flips the y coordinate for matteport.
     true_seg_grid = torch.flip(true_seg_grid, dims=[0])
@@ -214,46 +200,6 @@ def get_gt_map(x, y, label_seq, abs_pose, grid_dim, cell_size, color_pcloud=None
     else:
         return true_seg_grid
 
-
-'''
-def get_gt_map_with_pooling(x, y, label_seq, abs_pose, grid_dim, cell_size):
-    # Transform the ground-truth map to align with the agent's pose
-    # The agent is at the center looking upwards
-    point_map = np.array([x,y])
-    rot_mat_abs = np.array([[np.cos(-abs_pose[2]), -np.sin(-abs_pose[2])],[np.sin(-abs_pose[2]),np.cos(-abs_pose[2])]])
-    trans_mat_abs = np.array([[-abs_pose[1]],[abs_pose[0]]]) #### This is important, the first index is negative.
-    ##rotating and translating point map points
-    t_points = point_map - trans_mat_abs
-    rot_points = np.matmul(rot_mat_abs,t_points)
-    x_abs = torch.tensor(rot_points[0,:], device='cuda')
-    y_abs = torch.tensor(rot_points[1,:], device='cuda')
-
-    map_coords = discretize_coords(x=x_abs, z=y_abs, grid_dim=grid_dim, cell_size=cell_size)
-
-    true_seg_grid = torch.empty((27, grid_dim[0], grid_dim[1]), device='cuda')
-    #grid = torch.empty(3, grid_dim[0], grid_dim[1], device=device)
-    concatenated = torch.cat([map_coords, label_seq.long()], dim=-1)
-    unique_values, counts = torch.unique(concatenated, dim=0, return_counts=True)
-    print("unique:", unique_values.shape)
-    true_seg_grid[unique_values[:, 2], unique_values[:, 1], unique_values[:, 0]] = counts + 1e-5
-    true_seg_grid = true_seg_grid / true_seg_grid.sum(dim=0)
-
-    print(map_coords.shape)
-    print(label_seq.shape)
-    print(true_seg_grid.shape)
-    print(true_seg_grid[:,500,500])
-    #raise Exception('333')
-
-    true_seg_grid = torch.flip(true_seg_grid, dims=[1])
-
-    #true_seg_grid = torch.zeros((grid_dim[0], grid_dim[1], 1), device='cuda')
-    #true_seg_grid[map_coords[:,1], map_coords[:,0]] = label_seq
-    ### We need to flip the ground truth to align with the observations.
-    ### Probably because the -y tp -z is a rotation about x axis which also flips the y coordinate for matteport.
-    #true_seg_grid = torch.flip(true_seg_grid, dims=[0])
-    #true_seg_grid = true_seg_grid.permute(2, 0, 1)
-    return true_seg_grid
-'''
 def update_sseg_with_occ(pred_ego_crops_sseg, ego_grid_sseg_3, crop_size):
     # update floors in sseg with occ map
     # override sseg if prob(freespace) > 0.9

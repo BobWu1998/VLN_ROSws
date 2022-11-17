@@ -203,7 +203,7 @@ def vis_heatmaps(pred, gt):
 
 def vis_arr(array, savepath, name):
     # img: dim x dim x 1
-    # array = array.cpu().numpy()
+    array = array.cpu().numpy()
     im_path = savepath + name + ".png"
     plt.title(name)
     plt.imshow(array, cmap='viridis')
