@@ -1,4 +1,3 @@
-# VLN_robot
 ## Implemented following functions for turtlebot3
 * ground projection of occupancy map from depth reading
 * semantic segmentation using aihabitat
