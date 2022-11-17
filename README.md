@@ -6,6 +6,9 @@
 * updated semantic map with occupancy map
 
 ## Completed running the test pipeline of cross-modal map learning for vision and language navigation with real-world data
+To run the data, first create the ROS working space following the steps described in:
+https://github.com/BobWu1998/Vision-Language-on-Roomba
+
 ```
 python main.py --name=test_episode --vln_no_map --root_path /home/bo/Desktop/VLN_desktop/aihabitat_data/ --model_exp_dir /home/bo/Desktop/VLN_desktop/VLN_rerun/models/ --save_nav_images --use_first_waypoint \
 --steps_after_plan 1
