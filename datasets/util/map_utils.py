@@ -32,7 +32,7 @@ def est_occ_from_depth(local3D, grid_dim, cell_size, device, occupancy_height_th
         y = local3D_step[:,1]
         # local3D_step = local3D_step[(z < 3) & (z > 0.5) & (y < 1), :]
         # local3D_step = local3D_step[(z < 10) & (z > 0.5) & (y < 4), :]
-        local3D_step = local3D_step[(z < 5) & (z > 0.5) & (y < 4), :]
+        local3D_step = local3D_step[(z < 3) & (z > 0.5) & (y < 4), :]
         
         # initialize all locations as unknown (void)
         occ_lbl = torch.zeros((local3D_step.shape[0], 1), dtype=torch.float32, device=device)
@@ -77,7 +77,7 @@ def ground_projection(points2D, local3D, sseg, sseg_labels, grid_dim, cell_size)
         # and points for which z > 0.5m (to avoid having artifacts right in-front of the robot)
         z = -local3D_step[:,2]
         # valid_inds = torch.nonzero(torch.where((z<5) & (z>0.5), 1, 0)).squeeze(dim=1)
-        valid_inds = torch.nonzero(torch.where((z<5) & (z>0.5), 1, 0)).squeeze(dim=1)
+        valid_inds = torch.nonzero(torch.where((z<3) & (z>0.5), 1, 0)).squeeze(dim=1)
         # local3D_step[(z < 4) & (z > 0.5) & (y < 4), :]
         local3D_step = local3D_step[valid_inds,:]
         points2D_step = points2D_step[valid_inds,:]
@@ -212,7 +212,7 @@ def update_sseg_with_occ(pred_ego_crops_sseg, ego_grid_sseg_3, crop_size):
     unocc_map = ego_unocc_map[2,:,:]
 
     # viz_utils.vis_arr(zero_map,'/','zero_map')
-    floor_idx = unocc_map>0.9
+    floor_idx = unocc_map> (1/3)
     
     pred_ego_crops_sseg[16,floor_idx] = 0.0
     pred_ego_crops_sseg[17,floor_idx] = 1.0 # floor
