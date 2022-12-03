@@ -353,5 +353,61 @@ class VLNTesterUnknownMap(object):
                 print('ltg_ego_coords', ltg_ego_coords)
                 print('---------------------------------------------------------------------------')
                 t += 1
+                
+    def run_goal_pred(self, instruction, sg, ego_occ_maps, ego_segm_maps, start_pos, pose):
+        ## Prepare model inputs
+        instruction = "[CLS] " + instruction + " [SEP]"
+        # Tokenize our sentence with the BERT tokenizer.
+        tokenized_text = self.tokenizer.tokenize(instruction)
+        # Map the token strings to their vocabulary indices.
+        indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
+        segments_ids = [1] * len(tokenized_text)
+        tokens_tensor = torch.tensor([indexed_tokens])
+        segments_tensors = torch.tensor([segments_ids])
+        # Truncate very large instructions to max length (512)
+        if tokens_tensor.shape[1] > self.max_seq_length:
+            tokens_tensor = tokens_tensor[:,:self.max_seq_length]
+            segments_tensors = segments_tensors[:,:self.max_seq_length]
+
+        # Get the heatmap for the start position (initial waypoint)
+        # This is with respect to the agent's current location
+        point_pose_coords, visible = tutils.transform_to_map_coords(sg=sg, position=start_pos, abs_pose=pose, 
+                                                                        grid_size=self.test_ds.grid_dim[0], cell_size=self.options.cell_size, device=self.device)
+        start_pos_heatmap = utils.locs_to_heatmaps(keypoints=point_pose_coords.squeeze(0), img_size=self.test_ds.grid_dim, out_size=self.test_ds.heatmap_size)
+
+        input_batch = {'step_ego_grid_maps':ego_occ_maps,
+                       'ego_segm_maps':ego_segm_maps,
+                       'goal_heatmap':start_pos_heatmap.unsqueeze(0).unsqueeze(0), # using the default name in the vln_goal_predictor
+                       'tokens_tensor':tokens_tensor.unsqueeze(0),
+                       'segments_tensors':segments_tensors.unsqueeze(0)}
+
+        pred_output = self.models_dict['goal_pred_model'](input_batch)
+
+        pred_waypoints_heatmaps = pred_output['pred_waypoints']
+        waypoints_cov_prob = pred_output['waypoints_cov']
+
+        # Convert predicted heatmaps to map coordinates
+        pred_waypoints_resized = F.interpolate(pred_waypoints_heatmaps, size=(self.test_ds.grid_dim[0], self.test_ds.grid_dim[1]), mode='nearest')
+        pred_locs, pred_vals = utils.heatmaps_to_locs(pred_waypoints_resized)
+        # get the predicted coverage
+        waypoints_cov = torch.argmax(waypoints_cov_prob, dim=2)
+
+        pred_maps_objects = pred_output['pred_maps_objects']
+        pred_maps_spatial = pred_output['pred_maps_spatial']
+
+        return pred_locs, pred_vals, waypoints_cov, pred_maps_spatial, pred_maps_objects
+
+
+    def run_local_policy(self, depth, goal, pose_coords, rel_agent_o, step):
+        planning_goal = goal.squeeze(0).squeeze(0)
+        planning_pose = pose_coords.squeeze(0).squeeze(0)
+        sq = torch.square(planning_goal[0]-planning_pose[0])+torch.square(planning_goal[1]-planning_pose[1])
+        rho = torch.sqrt(sq.float())
+        phi = torch.atan2((planning_pose[0]-planning_goal[0]),(planning_pose[1]-planning_goal[1]))
+        phi = phi - rel_agent_o
+        rho = rho*self.test_ds.cell_size
+        point_goal_with_gps_compass = torch.tensor([rho,phi], dtype=torch.float32).to(self.device)
+        depth = depth.reshape(self.test_ds.img_size[0], self.test_ds.img_size[1], 1)
+        return self.l_policy.plan(depth, point_goal_with_gps_compass, step)
 
 
