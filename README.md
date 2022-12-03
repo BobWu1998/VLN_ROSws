@@ -13,7 +13,12 @@ To run the data, first create the ROS working space following the steps describe
 https://github.com/BobWu1998/Vision-Language-on-Roomba
 
 After creating the workspace, git clone this repository to
-```path_to_workspace/src/move_cmds/src```
+```path_to_workspace/src/move_cmds```
+
+To make the code recognizable for ROS, rename the folder when git clone it
+```git clone "name of this repo" src```
+Don't forget to make the main function readable for the user:
+```chmod u+r main.py```
 
 Run the following command:
 ```
