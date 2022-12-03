@@ -17,6 +17,7 @@ After creating the workspace, git clone this repository to
 
 To make the code recognizable for ROS, rename the folder when git clone it
 ```git clone "name of this repo" src```
+
 Don't forget to make the main function readable for the user:
 ```chmod u+r main.py```
 
